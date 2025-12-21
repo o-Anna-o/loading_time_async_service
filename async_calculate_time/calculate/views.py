@@ -25,26 +25,13 @@ executor = futures.ThreadPoolExecutor(max_workers=2)
 def calculate_loading_time(
     containers_20ft: int,
     containers_40ft: int,
-    ships: list
 ) -> float:
     """
-    Формула полностью соответствует Go:
-
-    total_cranes = sum(ship.cranes * ship.ships_count)
-    loading_time = (20ft * 2 + 40ft * 3) / total_cranes
+    Упрощённая формула:
+    loading_time = 20ft * 2 + 40ft * 3
     """
 
-    total_cranes = 0
-    for ship in ships:
-        cranes = ship.get("cranes", 0)
-        count = ship.get("ships_count", 0)
-        total_cranes += cranes * count
-
-    if total_cranes == 0:
-        return 0.0
-
-    total_container_time = containers_20ft * 2 + containers_40ft * 3
-    return total_container_time / total_cranes
+    return containers_20ft * 2 + containers_40ft * 3
 
 
 # =========================================================
@@ -55,9 +42,8 @@ def calculate_loading_time_task(calc_data: dict) -> dict:
         request_ship_id = calc_data.get("request_ship_id")
         containers_20ft = calc_data.get("containers_20ft", 0)
         containers_40ft = calc_data.get("containers_40ft", 0)
-        ships = calc_data.get("ships", [])
 
-        if not request_ship_id or not ships:
+        if not request_ship_id:
             return {
                 "request_ship_id": request_ship_id,
                 "success": False,
@@ -72,10 +58,9 @@ def calculate_loading_time_task(calc_data: dict) -> dict:
         loading_time = calculate_loading_time(
             containers_20ft,
             containers_40ft,
-            ships
         )
 
-        # случайный результат
+        # случайный успех / неуспех
         if random.random() < 0.8:
             return {
                 "request_ship_id": request_ship_id,
@@ -148,7 +133,6 @@ def calculate_loading_time_api(request):
         "request_ship_id",
         "containers_20ft",
         "containers_40ft",
-        "ships"
     ]
 
     for field in required_fields:
@@ -166,5 +150,5 @@ def calculate_loading_time_api(request):
 
     return Response(
         {"message": "loading time calculation started"},
-        status=status.HTTP_200_OK
+        status=status.HTTP_202_ACCEPTED
     )
