@@ -19,9 +19,9 @@ AUTH_TOKEN = "12345678"
 executor = futures.ThreadPoolExecutor(max_workers=2)
 
 
-# =========================================================
+
 # DOMAIN CALCULATION (полный аналог Go CalculateLoadingTime)
-# =========================================================
+
 def calculate_loading_time(
     containers_20ft: int,
     containers_40ft: int,
@@ -34,9 +34,9 @@ def calculate_loading_time(
     return containers_20ft * 2 + containers_40ft * 3
 
 
-# =========================================================
+
 # ASYNC TASK
-# =========================================================
+
 def calculate_loading_time_task(calc_data: dict) -> dict:
     try:
         request_ship_id = calc_data.get("request_ship_id")
@@ -61,7 +61,7 @@ def calculate_loading_time_task(calc_data: dict) -> dict:
         )
 
         # случайный успех / неуспех
-        if random.random() < 0.8:
+        if random.random() < 0.9:
             return {
                 "request_ship_id": request_ship_id,
                 "success": True,
@@ -83,9 +83,9 @@ def calculate_loading_time_task(calc_data: dict) -> dict:
         }
 
 
-# =========================================================
+
 # CALLBACK
-# =========================================================
+
 def callback_handler(task):
     result = task.result()
     request_ship_id = result.get("request_ship_id")
@@ -120,9 +120,9 @@ def callback_handler(task):
         logger.error(f"Callback network error: {e}")
 
 
-# =========================================================
+
 # API ENDPOINT (Go вызывает ТОЛЬКО его)
-# =========================================================
+
 @api_view(["POST"])
 def calculate_loading_time_api(request):
     """
