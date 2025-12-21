@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from calculate import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('calculate_loading_time/', views.calculate_loading_time_api, name='calculate_loading_time'),
+    path('', views.calculate_loading_time_api, name='home'),
 ]
