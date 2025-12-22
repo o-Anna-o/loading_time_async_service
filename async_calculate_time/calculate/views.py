@@ -25,15 +25,18 @@ executor = futures.ThreadPoolExecutor(max_workers=2)
 def calculate_loading_time(
     containers_20ft: int,
     containers_40ft: int,
+    ships: list[dict],
 ) -> float:
-    """
-    Упрощённая формула:
-    loading_time = 20ft * 2 + 40ft * 3
-    """
 
-    return containers_20ft * 2 + containers_40ft * 3
+    total_cranes = 0
+    for ship in ships:
+        total_cranes += ship["cranes"] * ship["ships_count"]
 
+    if total_cranes == 0:
+        return 0
 
+    total_container_time = containers_20ft * 2 + containers_40ft * 3
+    return total_container_time / total_cranes
 
 # ASYNC TASK
 
@@ -42,6 +45,7 @@ def calculate_loading_time_task(calc_data: dict) -> dict:
         request_ship_id = calc_data.get("request_ship_id")
         containers_20ft = calc_data.get("containers_20ft", 0)
         containers_40ft = calc_data.get("containers_40ft", 0)
+        ships = calc_data.get("ships", [])
 
         if not request_ship_id:
             return {
@@ -58,6 +62,7 @@ def calculate_loading_time_task(calc_data: dict) -> dict:
         loading_time = calculate_loading_time(
             containers_20ft,
             containers_40ft,
+            ships,
         )
 
         # случайный успех / неуспех
