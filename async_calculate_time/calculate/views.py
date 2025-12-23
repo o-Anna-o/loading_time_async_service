@@ -1,5 +1,8 @@
 # async_calculate_time/calculate/views.py
 
+# cd async_calculate_time
+# python manage.py runserver 0.0.0.0:8000
+
 import logging
 import time
 import random
